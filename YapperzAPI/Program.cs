@@ -5,6 +5,7 @@ using YapperzAPI.Models;
 using YapperzAPI.Services;
 using YapperzAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using YapperzAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
+builder.Services.AddSignalR();
 builder.Services.AddScoped<IUsersService, UsersServices>();
 builder.Services.AddScoped<IChatroomService, ChatroomService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -52,5 +54,6 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatroomHub>("/chatroomHub");
 
 app.Run();
