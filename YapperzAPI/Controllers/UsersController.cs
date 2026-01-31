@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
+using YapperzAPI.Dtos.Chatroom;
 using YapperzAPI.Dtos.Users;
 using YapperzAPI.Models;
 using YapperzAPI.Services;
@@ -56,6 +57,25 @@ namespace YapperzAPI.Controllers
             }
 
             return Ok(user);
+        }
+
+        [HttpGet("{id:int}/room")]
+        public async Task<ActionResult<ChatroomDto>> GetUsersChatroom(int id)
+        {
+            try
+            {
+                var chatroomDto = await _userService.GetUsersChatroomAsync(id);
+                if (chatroomDto is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(chatroomDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
