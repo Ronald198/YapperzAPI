@@ -16,7 +16,7 @@ namespace YapperzAPI.Extensions
                 DisplayName = user.DisplayName,
                 AvatarPath = user.AvatarPath,
                 Bio = user.Bio,
-                Room = user.Room,
+                //Room = user.Room,
                 JoinedAt = user.JoinedAt
             };
         }

@@ -11,6 +11,6 @@ namespace YapperzAPI.Dtos.Users
         public required string Bio { get; set; }
         public required string AvatarPath { get; set; }
         public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
-        public ChatRoom? Room { get; set; }
+        //public ChatRoomDto? Room { get; set; }
     }
 }

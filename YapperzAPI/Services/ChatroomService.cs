@@ -2,6 +2,7 @@
 using System.Globalization;
 using YapperzAPI.Data;
 using YapperzAPI.Dtos.Chatroom;
+using YapperzAPI.Dtos.Users;
 using YapperzAPI.Extensions;
 using YapperzAPI.Models;
 using YapperzAPI.Services.Interfaces;
@@ -30,6 +31,23 @@ namespace YapperzAPI.Services
         {
             var room = await GetByCodeAsync(roomCode);
             return room?.ToDto();
+        }
+
+        public async Task<IReadOnlyList<UsersDto>> GetUsersByRoomCodeAsync(string roomCode)
+        {
+            var chatRoom = await _appDbContext.Chatrooms
+                .Include(c => c.Users)
+                .FirstOrDefaultAsync(c => c.Code == roomCode);
+
+            if (chatRoom is null || chatRoom.Users is null || chatRoom.Users.Count == 0)
+            {
+                return Array.Empty<UsersDto>();
+            }
+
+            // Assuming you have a User -> UsersDto mapper/extension like user.ToDto()
+            return chatRoom.Users
+                .Select(u => u.ToDto())
+                .ToList();
         }
 
         public async Task<bool> JoinChatroomAsync(ChatroomJoinLeaveDto request)

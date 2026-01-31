@@ -72,5 +72,21 @@ namespace YapperzAPI.Controllers
 
             return Ok(chatroomDto);
         }
+
+        [HttpGet("{roomCode}/users")]
+        public async Task<ActionResult<IReadOnlyList<UsersDto>>> GetUsersByRoomCode(string roomCode)
+        {
+            var users = await _chatroomService.GetUsersByRoomCodeAsync(roomCode);
+
+            // Return 404 if no such room or no users, depending on how you want to signal this.
+            // Here: empty list is OK, only 404 if room doesn't exist.
+            if (users.Count == 0)
+            {
+                // If you prefer 200 with empty list, just `return Ok(users);`
+                return Ok(users);
+            }
+
+            return Ok(users);
+        }
     }
 }
