@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped<IUsersService, UsersServices>();
+builder.Services.AddScoped<IChatroomService, ChatroomService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddCors(options =>

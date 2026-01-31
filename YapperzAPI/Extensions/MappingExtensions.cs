@@ -1,4 +1,5 @@
-﻿using YapperzAPI.Dtos.Users;
+﻿using YapperzAPI.Dtos.Chatroom;
+using YapperzAPI.Dtos.Users;
 using YapperzAPI.Models;
 
 namespace YapperzAPI.Extensions
@@ -17,6 +18,20 @@ namespace YapperzAPI.Extensions
                 Bio = user.Bio,
                 Room = user.Room,
                 JoinedAt = user.JoinedAt
+            };
+        }
+
+        public static ChatroomDto ToDto(this ChatRoom chatRoom)
+        {
+            return new ChatroomDto
+            {
+                Code = chatRoom.Code,
+                Name = chatRoom.Name,
+                MaxPlayers = chatRoom.MaxPlayers,
+                Status = chatRoom.Status,
+                Theme = chatRoom.Theme,
+                Description = chatRoom.Description,
+                //Users = chatRoom.Users
             };
         }
     }

@@ -9,5 +9,6 @@ namespace YapperzAPI.Data
         { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<ChatRoom> Chatrooms { get; set; }
     }
 }
