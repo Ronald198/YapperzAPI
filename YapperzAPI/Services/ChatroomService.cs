@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using YapperzAPI.Data;
 using YapperzAPI.Dtos.Chatroom;
 using YapperzAPI.Dtos.Users;
 using YapperzAPI.Extensions;
+using YapperzAPI.Hubs;
 using YapperzAPI.Models;
 using YapperzAPI.Services.Interfaces;
 
@@ -12,10 +16,12 @@ namespace YapperzAPI.Services
     public class ChatroomService : IChatroomService
     {
         public AppDbContext _appDbContext;
+        private readonly IHubContext<ChatroomHub> _hubContext;
 
-        public ChatroomService(AppDbContext appDbContext)
+        public ChatroomService(AppDbContext appDbContext, IHubContext<ChatroomHub> hubContext)
         {
             _appDbContext = appDbContext;
+            _hubContext = hubContext;
         }
 
         public async Task<ChatRoom?> GetByCodeAsync(string roomCode)
@@ -60,15 +66,6 @@ namespace YapperzAPI.Services
             }
             else
             {
-                if (chatRoom.Users.Count >= chatRoom.MaxPlayers)
-                {
-                    throw new InvalidOperationException("Room is full.");
-                }
-                if (chatRoom.Status == RoomStatus.Closed)
-                {
-                    throw new InvalidOperationException("Room is closed.");
-                }
-
                 User? user = _appDbContext.Users.FirstOrDefault(u => u.Id == request.UserId);
 
                 if (user == null)
@@ -77,9 +74,25 @@ namespace YapperzAPI.Services
                 }
                 else
                 {
+                    user.Room = null;
+                    await _appDbContext.SaveChangesAsync();
+                        
+                    if (chatRoom.Users.Count >= chatRoom.MaxPlayers)
+                    {
+                        throw new InvalidOperationException("Room is full.");
+                    }
+                    if (chatRoom.Status == RoomStatus.Closed)
+                    {
+                        throw new InvalidOperationException("Room is closed.");
+                    }
+
                     chatRoom.Users.Add(user);
                     user.Room = chatRoom;
                     await _appDbContext.SaveChangesAsync();
+
+                    // Notify connected clients in this room that a new player joined
+                    UsersDto userDto = user.ToDto();
+                    await _hubContext.Clients.Group(chatRoom.Code).SendAsync("NewPlayerJoined", userDto);
                     return true;
                 }
             }
@@ -107,6 +120,7 @@ namespace YapperzAPI.Services
                 {
                     chatRoom.Users.Remove(user);
                     await _appDbContext.SaveChangesAsync();
+                    await _hubContext.Clients.Group(chatRoom.Code).SendAsync("PlayerLeft", user.Id, user.DisplayName);
                     return true;
                 }
             }
