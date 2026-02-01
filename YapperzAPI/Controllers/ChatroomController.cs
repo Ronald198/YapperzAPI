@@ -2,7 +2,9 @@
 using YapperzAPI.Dtos.Chatroom;
 using YapperzAPI.Dtos.Users;
 using YapperzAPI.Services.Interfaces;
-
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using YapperzAPI.Models;
 namespace YapperzAPI.Controllers
 {
     [Route("api/[controller]")]
