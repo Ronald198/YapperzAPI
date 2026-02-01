@@ -77,5 +77,51 @@ namespace YapperzAPI.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPut("update-profile/{id}")]
+        public async Task<ActionResult<UsersDto>> UpdateProfile(int id, [FromBody] UsersDto userDto)
+        {
+            var updatedUser = await _userService.UpdateUserProfileAsync(id, userDto);
+            if (updatedUser == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedUser);
+        }
+
+        // --- FIXED ENDPOINT ---
+        [HttpPut("UpdateAvatar")]
+        public async Task<ActionResult<UsersDto>> UpdateAvatarFromJs([FromBody] UpdateAvatarRequest request)
+        {
+            // 1. Fetch the EXISTING user first.
+            // This ensures we have a valid DTO with Username, Email, etc. already filled in.
+            var existingUser = await _userService.GetProfileAsync(request.UserId);
+
+            if (existingUser == null)
+            {
+                return NotFound("User not found");
+            }
+
+            // 2. Modify ONLY the AvatarPath
+            existingUser.AvatarPath = request.AvatarPath;
+
+            // 3. Save the changes
+            var updatedUser = await _userService.UpdateUserAvatarAsync(request.UserId, existingUser);
+
+            if (updatedUser == null)
+            {
+                return NotFound("User not found during update");
+            }
+
+            return Ok(updatedUser);
+        }
+    }
+
+    // Helper class for the JSON from avatar.js
+    // Added 'required' to fix the CS8618 warning
+    public class UpdateAvatarRequest
+    {
+        public int UserId { get; set; }
+        public required string AvatarPath { get; set; }
     }
 }

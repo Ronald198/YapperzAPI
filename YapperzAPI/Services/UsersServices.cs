@@ -87,5 +87,29 @@ namespace YapperzAPI.Services
 
             return user.Room.ToDto();
         }
+        public async Task<UsersDto?> UpdateUserProfileAsync(int id, UsersDto userDto)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user is null) return null;
+
+            // Update specific profile fields
+            user.DisplayName = userDto.DisplayName;
+            user.Bio = userDto.Bio; // Assuming Bio property exists on User model
+
+            await _appDbContext.SaveChangesAsync();
+            return user.ToDto();
+        }
+
+        public async Task<UsersDto?> UpdateUserAvatarAsync(int id, UsersDto userDto)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user is null) return null;
+
+            // Update avatar path
+            user.AvatarPath = userDto.AvatarPath;
+
+            await _appDbContext.SaveChangesAsync();
+            return user.ToDto();
+        }
     }
 }
