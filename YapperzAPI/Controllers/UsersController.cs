@@ -77,5 +77,29 @@ namespace YapperzAPI.Controllers
                 return NotFound(ex.Message);
             }
         }
+        
+        /// Update user avatar
+        /// <summary>
+        /// Updates the user's avatar path
+        /// </summary>
+        /// <param name="updateAvatarDto">Contains UserId and new AvatarPath</param>
+        /// <returns>Updated user information</returns>
+        [HttpPut("UpdateAvatar")]
+        public async Task<ActionResult<UsersDto>> UpdateUserAvatar([FromBody] UpdateAvatarDto updateAvatarDto)
+        {
+            if (updateAvatarDto == null || string.IsNullOrEmpty(updateAvatarDto.AvatarPath))
+            {
+                return BadRequest(new { message = "Avatar path is required" });
+            }
+
+            var updatedUser = await _userService.UpdateUserAvatarAsync(updateAvatarDto);
+
+            if (updatedUser == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            return Ok(updatedUser);
+        }
     }
 }

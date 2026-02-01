@@ -87,5 +87,24 @@ namespace YapperzAPI.Services
 
             return user.Room.ToDto();
         }
+        
+        // Update user avatar
+        public async Task<UsersDto?> UpdateUserAvatarAsync(UpdateAvatarDto updateAvatarDto)
+        {
+            var user = await GetByIdAsync(updateAvatarDto.UserId);
+    
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Update the avatar path
+            user.AvatarPath = updateAvatarDto.AvatarPath;
+    
+            await _appDbContext.SaveChangesAsync();
+
+            // Return the updated user as DTO
+            return user.ToDto();
+        }
     }
 }
