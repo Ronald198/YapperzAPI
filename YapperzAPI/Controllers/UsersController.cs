@@ -78,6 +78,18 @@ namespace YapperzAPI.Controllers
             }
         }
         
+
+        [HttpPut("update-profile/{id}")]
+        public async Task<ActionResult<UsersDto>> UpdateProfile(int id, [FromBody] UsersDto userDto)
+        {
+            var updatedUser = await _userService.UpdateUserProfileAsync(id, userDto);
+            if (updatedUser == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedUser);
+        }
+
         /// Update user avatar
         /// <summary>
         /// Updates the user's avatar path
@@ -101,5 +113,13 @@ namespace YapperzAPI.Controllers
 
             return Ok(updatedUser);
         }
+    }
+
+    // Helper class for the JSON from avatar.js
+    // Added 'required' to fix the CS8618 warning
+    public class UpdateAvatarRequest
+    {
+        public int UserId { get; set; }
+        public required string AvatarPath { get; set; }
     }
 }
