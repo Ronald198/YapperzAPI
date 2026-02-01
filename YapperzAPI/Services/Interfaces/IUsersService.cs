@@ -11,5 +11,8 @@ namespace YapperzAPI.Services.Interfaces
         Task<UsersDto?> GetProfileAsync(int id);
         Task<ChatroomDto?> GetUsersChatroomAsync(int id);
         Task<User?> GetByIdAsync(int id);
+        Task<UsersDto?> UpdateUserAvatarAsync(UpdateAvatarDto updateAvatarDto);
+        Task<UsersDto?> UpdateUserProfileAsync(int id, UsersDto userDto);
+        Task<UsersDto?> UpdateUserAvatarAsync(int id, UsersDto userDto);
     }
 }
